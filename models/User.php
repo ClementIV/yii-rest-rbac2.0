@@ -30,7 +30,7 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
  */
 class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 {
-    const STATUS_DELETED = 0;
+    const STATUS_INACTIVE = 0;
     const STATUS_ACTIVE = 10;
 
     /**
@@ -39,9 +39,6 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     public static function tableName()
     {
         return Configs::instance()->userTable;
-    }
-    public function fields(){
-        return ['username','email','created_at','status'];
     }
     /**
      * {@inheritdoc}
@@ -102,7 +99,9 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE,]);
 
     }
-
+    public static function CheckUserName($username){
+        return static::findOne(['username' => $username]);
+    }
 
     /**
      * Finds user by password reset token.
@@ -289,5 +288,6 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     // {
     //     return $this->hasMany(CcStudent::className(), ['id' => 'id']);
     // }
+    //
 
 }

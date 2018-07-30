@@ -135,7 +135,7 @@ class DbManager extends \yii\rbac\DbManager
      */
     public function add($object)
     {
-    
+
 
         if ($object instanceof Item) {
 
@@ -149,6 +149,7 @@ class DbManager extends \yii\rbac\DbManager
 
             return $this->addRule($object);
         } else {
+            
             throw new InvalidParamException('Adding unsupported object type.');
         }
     }

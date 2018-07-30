@@ -66,7 +66,7 @@ class BizRule extends \yii\base\Model
     {
         return [
             [['name', 'className'], 'required'],
-            [['className'], 'string']
+            [['className'], 'string'],
 
         ];
     }

@@ -9,10 +9,10 @@ use clement\rest\models\User;
  */
 class SignupForm extends Model
 {
+
     public $username;
     public $password;
-    public $checkPass;
-    public $email;
+    public $status;
     public $_user;
     /**
      * @inheritdoc
@@ -22,18 +22,11 @@ class SignupForm extends Model
         return [
             ['username', 'trim'],
             ['username', 'required'],
-            ['username', 'unique', 'targetClass' => '\backend\modules\api\v1\models\user\User', 'message' => 'This username has already been taken.'],
+            ['username', 'unique', 'targetClass' => Yii::$app->getUser()->identityClass, 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
-
-            ['email', 'trim'],
-            ['email', 'required'],
-            ['email', 'email'],
-            ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => '\backend\modules\api\v1\models\user\User', 'message' => 'This email address has already been taken.'],
-
-            [['password','checkPass'], 'required'],
-            ['password', 'string', 'min' => 6],
-            ['checkPass','compare','compareAttribute'=> 'password']
+            [['password','status'], 'required'],
+            [['status'], 'integer'],
+            ['password', 'string', 'min' => 6]
         ];
     }
 
@@ -50,8 +43,8 @@ class SignupForm extends Model
 
         $user = new User();
         $user->username = $this->username;
-        $user->email = $this->email;
         $user->setPassword($this->password);
+        $user->status = $this->status;
         $user->generateAuthKey();
 
         return $user->save() ? $user : null;

@@ -117,7 +117,23 @@ class Menu extends \yii\db\ActiveRecord
         return $this->hasMany(Menu::className(), ['parent' => 'id']);
     }
     private static $_routes;
+    public static function getPageMenus($params)
+    {
+        $tableName = static::tableName();
+        $query =(new \yii\db\Query())
+                ->select(['m.id', 'm.name', 'm.route', 'parent_name' => 'p.name'])
+                ->from(['m' => $tableName])
+                ->leftJoin(['p' => $tableName], '[[m.parent]]=[[p.id]]');
 
+        if(array_key_exists("page", $params)&&array_key_exists("pageLimit", $params)){
+            $query = $query->orderBy('m.id')
+                    ->offset($params["page"]*$params["pageLimit"])
+                    ->limit($params["pageLimit"]);
+        }
+        $count = $query->count();
+        $query=$query->all(static::getDb());
+        return ['count'=>$count,'items'=>$query];
+    }
     /**
      * Get saved routes.
      * @return array

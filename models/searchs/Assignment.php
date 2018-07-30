@@ -61,4 +61,26 @@ class Assignment extends Model
 
         return $dataProvider;
     }
+    public function searchPage($params,$class)
+    {
+        $query = $class::find();
+
+        //var_dump($params);die();
+        $query->orderBy('id')
+                ->offset($params["page"]*$params["pageLimit"])
+                ->limit($params["pageLimit"]);
+
+
+
+        if(array_key_exists("status",$params)){
+            $query->where(['status'=>$params["status"]]);
+        }
+        if(array_key_exists("q",$params)){
+            $query->andFilterWhere(['like','username', $params["q"] ]);
+        }
+        $count = $query->count();
+        $res =$query->all(); 
+
+        return ['count'=>$count,'items'=>$res];
+    }
 }

@@ -43,7 +43,7 @@ class ItemController extends BaseController
                 'delete' => ['DELETE', 'OPTIONS'],
                 'create' => ['POST', 'OPTIONS'],
                 'index' => ['GET', 'OPTIONS'],
-                'update' => ['PUT', 'PATCH', 'OPTIONS'],
+                'update' => ['PUT', 'PATCH','POST', 'OPTIONS'],
                 'assign' => ['POST','GET','OPTIONS'],
                 'view'=>['GET','OPTIONS'],
                 'view-path'=>['GET','OPTIONS'],

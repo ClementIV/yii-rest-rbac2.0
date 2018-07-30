@@ -6,7 +6,7 @@ use Yii;
 use clement\rest\models\form\Login;
 use clement\rest\models\form\PasswordResetRequest;
 use clement\rest\models\form\ResetPassword;
-use clement\rest\models\form\Signup;
+use clement\rest\models\SignupForm;
 use clement\rest\models\form\ChangePassword;
 use clement\rest\models\User;
 use clement\rest\models\searchs\User as UserSearch;
@@ -19,6 +19,7 @@ use yii\base\UserException;
 use yii\mail\BaseMailer;
 use clement\rest\controllers\base\BaseController;
 use yii\helpers\ArrayHelper;
+use clement\rest\components\Configs;
 /**
  * @author clement <fyqnankai@gmial.com>
  */
@@ -40,6 +41,8 @@ class UserController extends BaseController
            [
                'index' => ['GET','OPTIONS'],
                'assign' => ['POST','GET','OPTIONS'],
+               'check' => ['POST','OPTIONS'],
+               'signup' => ['POST','OPTIONS'],
                'view' => ['GET','OPTIONS'],
                'revoke' => ['POST','GET','OPTIONS'],
            ]
@@ -51,10 +54,6 @@ class UserController extends BaseController
      */
     public function beforeAction($action)
     {
-        $request = \Yii::$app->request;
-        if ($request->getIsOptions()) {
-            return $this->ResponseOptions($this->verbs()['index']);
-        }
         if (parent::beforeAction($action)) {
             if (Yii::$app->has('mailer') && ($mailer = Yii::$app->getMailer()) instanceof BaseMailer) {
                 /* @var $mailer BaseMailer */
@@ -147,16 +146,25 @@ class UserController extends BaseController
      */
     public function actionSignup()
     {
-        $model = new Signup();
-        if ($model->load(Yii::$app->getRequest()->post())) {
-            if ($user = $model->signup()) {
-                return $this->goHome();
+        $request = \Yii::$app->request;
+        if ($request->getIsOptions()) {
+            return $this->ResponseOptions($this->verbs()['signup']);
+        }
+        try{
+            $model = new SignupForm();
+            $model->setAttributes(Yii::$app->request->post());
+            $user = $model->signup();
+            if ($user !=null) {
+                return ["success"=>true,"message"=>"创建成功！"];
+            }else{
+                return ["success"=>false,"message"=>"参数错误！"];
             }
+        }catch(Exception $e){
+            throw new Exception($e);
         }
 
-        return $this->render('signup', [
-                'model' => $model,
-        ]);
+
+
     }
 
     /**
@@ -243,6 +251,25 @@ class UserController extends BaseController
         return $this->goHome();
     }
 
+    public function actionCheck(){
+        $request = \Yii::$app->request;
+        if ($request->getIsOptions()) {
+            return $this->ResponseOptions($this->verbs()['check']);
+        }
+        try{
+            $username=Yii::$app->request->post("username");
+            $user = User::CheckUserName($username);
+            if($user!=null)
+            {
+                return ["success"=>true,"isNewName"=>false];
+            }else{
+                return ["success"=>true,"isNewName"=>true];
+            }
+        }catch(Exception $e){
+            throw new Exception ($e);
+        }
+
+    }
     /**
      * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

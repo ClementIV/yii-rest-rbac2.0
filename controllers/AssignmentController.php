@@ -73,7 +73,7 @@ class AssignmentController extends BaseController
             if ($this->searchClass === null) {
                 $searchModel = new AssignmentSearch;
                 $dataProvider = $searchModel->search(Yii::$app->getRequest()->getQueryParams(), $this->userClassName, $this->usernameField);
-                //var_dump($dataProvider);die();
+                //var_dump(Yii::$app->getRequest()->getQueryParams());die();
             } else {
                 $class = $this->searchClass;
                 $searchModel = new $class;
@@ -81,6 +81,29 @@ class AssignmentController extends BaseController
             }
             //
             return  $dataProvider;
+
+        } catch(Exception $e){
+            throw new Exception($e);
+        }
+
+    }
+    public function actionSearch()
+    {
+        $request = \Yii::$app->request;
+        if ($request->getIsOptions()) {
+            return $this->ResponseOptions($this->verbs()['index']);
+        }
+        try{
+            if ($this->searchClass === null) {
+                $searchModel = new AssignmentSearch;
+                $res = $searchModel->searchPage(Yii::$app->getRequest()->getQueryParams(), $this->userClassName);
+            } else {
+                $class = $this->searchClass;
+                $searchModel = new $class;
+                $dataProvider = $searchModel->searchPage(Yii::$app->getRequest()->getQueryParams());
+            }
+            //
+            return  $res;
 
         } catch(Exception $e){
             throw new Exception($e);

@@ -38,7 +38,9 @@ class RuleController extends BaseController
                 'create' => ['POST', 'OPTIONS'],
                 'index' => ['GET', 'OPTIONS'],
                 'update' => ['PUT', 'PATCH', 'OPTIONS'],
-                'view' =>['GET','OPTIONS']
+                'view' =>['GET','OPTIONS'],
+                'checkname' =>['POST','OPTIONS'],
+                'checkclass' =>['POST','OPTIONS'],
             ]
         );
     }
@@ -90,7 +92,40 @@ class RuleController extends BaseController
         }
         //return $this->render('view', ['model' => $model]);
     }
+    /**
+     * check is a new item
+     * @return boolan
+     */
+    public function actionCheckname(){
+        $request = \Yii::$app->request;
+        if ($request->getIsOptions()) {
+            return $this->ResponseOptions($this->verbs()['checkname']);
+        }
+        $model = new BizRule(null);
+        $mo =$model->find(Yii::$app->request->post()['BizRule']['name']);
+        if($mo==null){
+            return ['message'=>true];
+        }else{
+            return ['message'=>false];
+        }
 
+    }
+
+    public function actionCheckclass(){
+        $request = \Yii::$app->request;
+        if ($request->getIsOptions()) {
+            return $this->ResponseOptions($this->verbs()['checkclass']);
+        }
+        $model = new BizRule(null);
+        $model->load(Yii::$app->request->post());
+        $classExists = $model->classExists();
+        if($classExists==$model::RIGHTCLASS){
+            return ['message'=>true];
+        }else{
+            return ['message'=>false];
+        }
+
+    }
     /**
      * Creates a new AuthItem model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -118,11 +153,7 @@ class RuleController extends BaseController
                         $result=['success'=>true,'message'=>'规则已成功添加！'];
                         return $result;
                     }else{
-                        if($classExists==$model::NOCLASS){
-                            return ['success'=>false,'message'=>'规则类不存在！'];
-                        }else{
-                            return ['success'=>false,'message'=>'规则类不存在！'];
-                        }
+                        return ['success'=>false,'message'=>'规则类不存在！'];
                     }
 
 
@@ -152,17 +183,13 @@ class RuleController extends BaseController
             return $this->ResponseOptions($this->verbs()['update']);
         }
         if($model = $this->findModel($id)){
-
-
-            var_dump($model->load(Yii::$app->request->post()));
-            die();
             //($model->save());die();
             if ($model->load(Yii::$app->request->post())&& $model->save()) {
                 //Helper::invalidate();
 
                 return ['success'=>true];
             }else {
-                throw new Exception($e);
+                throw new \yii\web\ServerErrorHttpException();
             }
         }
         throw new \yii\web\ServerErrorHttpException();

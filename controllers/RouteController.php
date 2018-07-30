@@ -97,6 +97,8 @@ class RouteController extends BaseController
             $routes = Yii::$app->getRequest()->post('routes', []);
             $model = new Route();
             $model->addNew($routes);
+            //var_dump();die();
+
             Yii::$app->getResponse()->format = 'json';
 
             return $model->getRoutes();

@@ -25,7 +25,7 @@ class MenuController extends BaseController
     {
         $actions = parent::actions();
         // 注销系统自带的实现方法
-        unset($actions['delete'], $actions['create'], $actions['index'], $actions['view']);
+        unset($actions['delete'], $actions['create'], $actions['index'], $actions['view'],$actions['update']);
         return $actions;
     }
     protected function verbs()
@@ -34,9 +34,10 @@ class MenuController extends BaseController
            parent::verbs(),
            [
                'index' => ['GET','OPTIONS'],
-               'assign' => ['POST','GET','OPTIONS'],
                'view' => ['GET','OPTIONS'],
-               'revoke' => ['POST','GET','OPTIONS'],
+               'create'=>['POST','OPTIONS'],
+               'update'=>['POST','OPTIONS'],
+               'delete'=>['DELETE','OPTIONS'],
            ]
        );
     }
@@ -52,16 +53,50 @@ class MenuController extends BaseController
             return $this->ResponseOptions($this->verbs()['index']);
         }
         try{
-            $searchModel = new MenuSearch;
-            $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
-            return $dataProvider;
-        }catch(Exception $e){
+            return Menu::getPageMenus(Yii::$app->request->queryParams);
+
+        }catch(Exception $e)
+        {
             throw new Exception($e);
         }
 
 
+
     }
 
+    /**
+     * list all menus
+     * @return json list
+     */
+    public function actionGetMenus()
+    {
+        $request = \Yii::$app->request;
+        if ($request->getIsOptions()) {
+            return $this->ResponseOptions($this->verbs()['index']);
+        }
+        try{
+            return Menu::getMenuSource();
+        }catch(Exception $e){
+            throw new Exception($e);
+        }
+    }
+
+    /**
+     * list all menus route
+     * @return json list
+     */
+    public function actionGetSavedRoutes()
+    {
+        $request = \Yii::$app->request;
+        if ($request->getIsOptions()) {
+            return $this->ResponseOptions($this->verbs()['index']);
+        }
+        try{
+            return Menu::getSavedRoutes();
+        }catch(Exception $e){
+            throw new Exception($e);
+        }
+    }
     /**
      * Displays a single Menu model.
      * @param  integer $id
@@ -97,11 +132,9 @@ class MenuController extends BaseController
 
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 Helper::invalidate();
-                return $this->redirect(['view', 'id' => $model->id]);
+                return ["success"=> true];
             } else {
-                return $this->render('create', [
-                        'model' => $model,
-                ]);
+                return ["success"=> false];
             }
         }catch(Exception $e){
             throw new Exception($e);
@@ -121,17 +154,19 @@ class MenuController extends BaseController
         if ($request->getIsOptions()) {
             return $this->ResponseOptions($this->verbs()['update']);
         }
-        $model = $this->findModel($id);
-        if ($model->menuParent) {
-            $model->parent_name = $model->menuParent->name;
-        }
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Helper::invalidate();
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                    'model' => $model,
-            ]);
+        try{
+            $model = $this->findModel($id);
+            if ($model->menuParent) {
+                $model->parent_name = $model->menuParent->name;
+            }
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Helper::invalidate();
+                return ["success"=> true];
+            } else {
+                return ["success"=> false];
+            }
+        }catch(Exception $e){
+            throw new Exception($e);
         }
     }
 
@@ -150,7 +185,7 @@ class MenuController extends BaseController
         $this->findModel($id)->delete();
         Helper::invalidate();
 
-        return $this->redirect(['index']);
+        return ["success"=> true];
     }
 
     /**

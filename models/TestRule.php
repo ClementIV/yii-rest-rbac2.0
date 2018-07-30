@@ -1,5 +1,5 @@
 <?php
-namespace clement\rest;
+namespace clement\rest\models;
 use yii\rbac\Rule;
 //use app\models\Post;
 

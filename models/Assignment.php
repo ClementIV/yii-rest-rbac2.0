@@ -83,6 +83,7 @@ class Assignment extends \clement\rest\BaseObject
      * Get all available and assigned roles/permission
      * @return array
      */
+
     public function getItems()
     {
         $manager = Configs::authManager();
@@ -118,4 +119,5 @@ class Assignment extends \clement\rest\BaseObject
             return $this->user->$name;
         }
     }
+
 }
