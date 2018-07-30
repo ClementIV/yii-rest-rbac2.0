@@ -5,7 +5,7 @@
     "type": "yii2-extension",
     "require": {
         "yiisoft/yii2": "~2.0.7",
-        "clement/yii-rest-rbac2.0": "~1.0.0",
+        "clement/yii-rest-rbac2.0": "~2.0.0",
         "lcobucci/jwt": "~3.2.0"
     },
     "license": "MIT",
