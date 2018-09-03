@@ -67,7 +67,6 @@ class ItemController extends BaseController
         }
         $searchModel = new AuthItemSearch(['type' => $this->type]);
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
-
         return $dataProvider;
     }
 
@@ -103,8 +102,9 @@ class ItemController extends BaseController
         $model->type = $this->type;
         try{
 
-            if ($model->load(Yii::$app->getRequest()->post()) && (!$model->find($model['name']))) {
-                $model->save();
+             // $model->load(Yii::$app->getRequest()->post());
+             // return $model;
+            if ($model->load(Yii::$app->getRequest()->post()) && (!$model->find($model['name']))&&$model->save()) {
                 return ['success'=>true,'message'=>'创建成功！'];
             }
             return ['success'=>false,'message'=>'参数错误！'];

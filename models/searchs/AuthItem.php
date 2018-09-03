@@ -82,8 +82,6 @@ class AuthItem extends Model
             }
         }
 
-        return new ArrayDataProvider([
-            'allModels' => $items,
-        ]);
+        return $items;
     }
 }

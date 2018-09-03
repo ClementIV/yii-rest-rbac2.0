@@ -95,6 +95,9 @@ class AuthItem extends Model
     public function checkRule()
     {
         $name = $this->ruleName;
+        if($name ==""){
+            return ;
+        }
         if (!Configs::authManager()->getRule($name)) {
             try {
                 $rule = Yii::createObject($name);
@@ -108,6 +111,7 @@ class AuthItem extends Model
                 $this->addError('ruleName', Yii::t('rbac-admin', 'Rule "{value}" does not exists', ['value' => $name]));
             }
         }
+
     }
 
     /**
@@ -155,6 +159,7 @@ class AuthItem extends Model
     public function save()
     {
         if ($this->validate()) {
+
             $manager = Configs::authManager();
             if ($this->_item === null) {
                 if ($this->type == Item::TYPE_ROLE) {

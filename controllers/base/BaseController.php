@@ -48,6 +48,13 @@ class BaseController extends ActiveController
                 'Access-Control-Max-Age' => 86400,
             ]
         ];
+        $behaviors['authenticator'] = [
+            'class' => APIAuth::className(),
+            'except' => ['OPTIONS'],
+        ];
+        $behaviors['access'] = [
+            'class' => AccessControl::className(),
+        ];
         return $behaviors;
     }
 
