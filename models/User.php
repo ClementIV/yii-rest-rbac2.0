@@ -156,7 +156,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
         $data = Yii::$app->jwt->getValidationData(); // It will use the current time to validate (iat, nbf and exp)
         $data->setIssuer(Yii::getAlias("@restIssuer"));
         $data->setAudience(Yii::getAlias("@restAudience"));
-        $data->setId(Yii::getAlias("@restId"), true);
+        $data->setId(Yii::getAlias("@restId")+strtotime(date('Y-m-d',time())), true);
         if (is_string($token))
             $token = Yii::$app->jwt->getParser()->parse($token);
 
@@ -235,12 +235,13 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
         $signer = new Sha256();
         $token = Yii::$app->jwt->getBuilder()->setIssuer(Yii::getAlias("@restIssuer"))// Configures the issuer (iss claim)
         ->setAudience(Yii::getAlias("@restAudience"))// Configures the audience (aud claim)
-        ->setId(Yii::getAlias("@restId"), true)
+        ->setId(Yii::getAlias("@restId")+ strtotime(date('Y-m-d',time())), true)
             ->setExpiration(time() + Yii::$app->params['accessTokenExpire'])// Configures exp time
             ->setIssuedAt(time())// Configures the time that the token was issue (iat claim)
 
             ->sign($signer, Yii::$app->jwt->key)
             ->getToken(); // Retrieves the generated token
+        //$this->auth_key=$this->id;
         $this->access_token = (string)$token;
     }
 
