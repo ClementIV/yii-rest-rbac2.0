@@ -61,7 +61,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     public function getRateLimit($request, $action)
     {
         // var_dump("c");
-        return [30, 60];
+        return [30, 100];
     }
 
     // 返回剩余的允许的请求数。
